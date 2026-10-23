@@ -1,0 +1,119 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>RepairLens</title>
+<style>
+:root{--bg:#f3f6f4;--cd:#fff;--tx:#17262a;--mu:#56666b;--ac:#0f6b5c;--ab:#dff1ec;--bd:#d4dedb;--wr:#a8261d;--wb:#fde9e7;--am:#fff3cf;--at:#6b4a00;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101a1b;--cd:#18262a;--tx:#e6efed;--mu:#9bb0ad;--ac:#5fd0b8;--ab:#17352f;--bd:#2a3d41;--wr:#ff9b92;--wb:#3a1d1b;--am:#3a3112;--at:#f1d37a}}
+:root[data-theme="dark"]{--bg:#101a1b;--cd:#18262a;--tx:#e6efed;--mu:#9bb0ad;--ac:#5fd0b8;--ab:#17352f;--bd:#2a3d41;--wr:#ff9b92;--wb:#3a1d1b;--am:#3a3112;--at:#f1d37a}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:640px;margin:0 auto;padding:12px 16px 40px}
+h1{font-size:1.5rem;line-height:1.2;margin:.4rem 0}h2{font-size:1.15rem;margin:1rem 0 .4rem}h3{font-size:1rem;margin:0}
+.brand{display:flex;align-items:center;gap:8px;font-weight:700;font-size:1.2rem;color:var(--ac)}
+.tabs{display:flex;gap:6px;margin:10px 0;flex-wrap:wrap}
+.tabs button{flex:1;min-width:90px}
+button,select,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:1px solid var(--ac);background:var(--cd);color:var(--ac);border-radius:10px;padding:10px 14px;font-weight:600}
+button.p{background:var(--ac);color:var(--bg)}button.on{background:var(--ab)}button.w{border-color:var(--wr);color:var(--wr)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+.c{background:var(--cd);border:1px solid var(--bd);border-radius:12px;padding:14px;margin:10px 0}
+.g{display:grid;grid-template-columns:1fr 1fr;gap:10px}.g button{padding:18px 10px;text-align:left}
+label{display:block;font-weight:600;margin:12px 0 4px}label.o{font-weight:400;display:flex;gap:8px;align-items:flex-start;margin:6px 0}
+input[type=text],select,textarea{width:100%;padding:10px;border:1px solid var(--bd);border-radius:8px;background:var(--cd)}
+.mu{color:var(--mu);font-size:.9rem}.bn{background:var(--am);color:var(--at);border-radius:10px;padding:8px 12px;font-size:.85rem;margin:8px 0}
+.wr{background:var(--wb);color:var(--wr);border:1px solid var(--wr);border-radius:12px;padding:14px;margin:10px 0}
+.bd{display:inline-block;border-radius:99px;padding:2px 10px;font-size:.8rem;background:var(--ab);color:var(--ac);font-weight:600}.bd.s{background:var(--am);color:var(--at)}
+.tl{border-left:3px solid var(--ac);margin:8px 0 8px 6px;padding-left:12px}.tl div{margin-bottom:8px}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.n{font-size:1.6rem;font-weight:700;color:var(--ac)}
+.d{display:grid;grid-template-columns:1fr 1fr;gap:8px}.d .c{margin:0}
+</style></head><body><main id="app"></main>
+<script>
+const $=s=>document.querySelector(s),esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const SYM={charge:{n:'Not charging',why:['A loose, worn or incompatible charger or cable','A socket or power-source issue','A charging-port or battery fault (a report alone cannot confirm this)'],chk:['Check the plug is firmly seated at the wall and at the laptop.','Try a different wall socket, without extension leads.','Unplug external devices, then look for a charging light.','If you have a known-compatible charger, try it.']},
+nopower:{n:'Will not turn on',why:['Battery fully drained or not charging','A charger or power-source issue','A display or internal fault (cannot be confirmed from a report)'],chk:['Connect the charger and wait 15 minutes before trying again.','Unplug all accessories, then press the power button once.','Look for any light or sound when you press the button.']},
+slow:{n:'Running slowly',why:['Too many start-up programs or low storage space','Software that needs updating','An ageing storage drive (cannot be confirmed from a report)'],chk:['Restart the laptop and close programs you are not using.','Check how much storage space is free.','Install pending system updates.','Back up your important files.']},
+screen:{n:'Screen problem',why:['A loose or failed display connection','Display or graphics settings','Physical screen damage'],chk:['Connect an external monitor, if you have one, to see if it displays.','Restart the laptop.','Note whether the problem is constant or comes and goes.']}};
+const WARN=['Swollen or bulging battery or case','Burning smell, smoke or sparks','Liquid spilled on the device','Case is unusually hot or has melted'];
+const AREAS=['Township Zone A','Township Zone B','Township Zone C'];
+const seed=()=>({prov:[{id:'p1',n:'Kedai Baiki Laptop (sample)',a:'Zone A',h:'Mon–Sat, 10am–6pm (unverified)',c:'+60 00-000 0001 (sample)',v:0},{id:'p2',n:'FixHub Township (sample)',a:'Zone A, Zone B',h:'Daily, 9am–5pm (unverified)',c:'+60 00-000 0002 (sample)',v:0},{id:'p3',n:'Zon C Tech Care (sample)',a:'Zone C',h:'Not provided',c:'+60 00-000 0003 (sample)',v:0}],col:[{id:'c1',n:'Township Eco Hub (sample)',l:'Zone A, near community hall',cat:'Laptops, phones, small appliances',c:'+60 00-000 0101 (sample)',h:'Weekends, 9am–1pm (unverified)',v:0},{id:'c2',n:'Community Centre E-waste Point (sample)',l:'Zone B community centre',cat:'Laptops, chargers',c:'+60 00-000 0102 (sample)',h:'Weekdays, 10am–4pm (unverified)',v:0}],reqs:[],hand:[]});
+let S={role:'res',view:'home',pid:'p1',sel:null,draft:{},flag:[],D:seed()};
+try{const x=JSON.parse(localStorage.getItem('rl1')||'null');if(x&&x.prov)S.D=x}catch(e){}
+const save=()=>{try{localStorage.setItem('rl1',JSON.stringify(S.D))}catch(e){}};
+const now=()=>new Date().toLocaleString('en-MY',{dateStyle:'medium',timeStyle:'short'});
+const go=v=>{S.view=v;render();scrollTo(0,0)},role=r=>{S.role=r;S.view=r=='res'?'home':r=='pro'?'pw':'adm';render()};
+const P=id=>S.D.prov.find(p=>p.id==id),R=id=>S.D.reqs.find(r=>r.id==id);
+const rd=n=>(document.querySelector('input[name='+n+']:checked')||{}).value||'';
+const val=id=>($('#'+id)||{}).value||'';
+const bdg=v=>v?'<span class="bd">Verified by township admin</span>':'<span class="bd s">Sample data · not verified</span>';
+function log(r,who,s,note){if(s)r.status=s;r.log.push({t:now(),who,s:s||r.status,note:note||''});save()}
+function tl(r){return '<div class="tl">'+r.log.map(l=>`<div><b>${esc(l.s)}</b> <span class="mu">· ${esc(l.t)} · recorded by ${esc(l.who)}</span>${l.note?'<br>'+esc(l.note):''}</div>`).join('')+'</div>'}
+function head(){return `<div class="brand">◎ RepairLens</div><div class="mu">A circular repair network for the Township of Tomorrow</div>
+<div class="tabs" role="tablist">${[['res','Resident'],['pro','Repair shop'],['adm','Township admin']].map(([k,l])=>`<button class="${S.role==k?'on':''}" onclick="role('${k}')">${l}</button>`).join('')}</div>
+<div class="bn">Demonstration prototype. All people, businesses, prices and outcomes are fictional sample data. Access rules are simulated, not production security. Guidance is preliminary and is not a diagnosis.</div>`}
+const back=(v,l)=>`<button onclick="go('${v||'home'}')">← ${l||'Back'}</button>`;
+const V={
+home:()=>`<h1>Something broken? Find your next step.</h1><p class="mu">Signed in as Aisyah (sample resident). The first prototype covers laptops.</p>
+<div class="g"><button class="p" onclick="S.draft={};S.flag=[];go('report')">Report a broken device</button><button onclick="go('reqs')">View my repair requests (${S.D.reqs.length})</button><button onclick="go('dir')">Find a repair shop</button><button onclick="go('col')">Find a collection point</button></div>`,
+report:()=>{const d=S.draft;return `${back()}<h1>Report a device problem</h1>
+<label>Device category</label><select id="cat"><option>Laptop</option></select><div class="mu">Other device types are planned for later.</div>
+<label for="br">Brand and model</label><input type="text" id="br" value="${esc(d.br)}" placeholder="e.g. Acme Book 14">
+<label for="sy">Main symptom</label><select id="sy">${Object.entries(SYM).map(([k,s])=>`<option value="${k}" ${d.sy==k?'selected':''}>${s.n}</option>`).join('')}</select>
+<label for="ds">Description</label><textarea id="ds" rows="3" placeholder="What happens, and when did it start?">${esc(d.ds)}</textarea>
+<label for="ar">Service area</label><select id="ar">${AREAS.map(a=>`<option ${d.ar==a?'selected':''}>${a}</option>`).join('')}</select>
+<label>Photo (optional)</label><div class="mu">Photo upload is planned for a later version. Photos would only be supporting information and would not confirm a fault.</div>
+<label class="o"><input type="checkbox" id="cs" ${d.cs?'checked':''}> I agree to share this request with the repair shop I choose.</label>
+<div id="er"></div><div class="row"><button class="p" onclick="toFollow()">Continue to questions</button></div>`},
+follow:()=>`${back('report')}<h1>A few quick questions</h1>
+<div class="c"><b>Is the problem continuous or does it come and go?</b><label class="o"><input type="radio" name="q1" value="Continuous"> Continuous</label><label class="o"><input type="radio" name="q1" value="Intermittent"> Intermittent</label></div>
+<div class="c"><b>Is there visible damage?</b><label class="o"><input type="radio" name="q2" value="Yes"> Yes</label><label class="o"><input type="radio" name="q2" value="No"> No</label></div>
+<div class="c"><b>Has the device been assessed before?</b><label class="o"><input type="radio" name="q4" value="Yes"> Yes</label><label class="o"><input type="radio" name="q4" value="No"> No</label></div>
+<div class="c"><b>Do any of these apply? (tick all that do)</b>${WARN.map((w,i)=>`<label class="o"><input type="checkbox" class="wn" value="${esc(w)}"> ${w}</label>`).join('')}</div>
+<div id="er"></div><div class="row"><button class="p" onclick="toGuide()">See guidance</button></div>`,
+guide:()=>{const d=S.draft,s=SYM[d.sy];
+if(S.flag.length)return `<div class="wr"><h1>Stop: this may not be safe</h1><p>You reported: ${S.flag.map(esc).join('; ')}.</p><p><b>Do not use or charge the device.</b> Unplug it if you can do so safely, keep it away from flammable items and people, and contact a qualified repair professional or your local emergency services if there is smoke, fire or a strong burning smell.</p><p>RepairLens does not give steps for opening batteries, working on internal mains-powered parts or bypassing safety protections.</p></div><div class="row">${back('home','Home')}<button onclick="go('dir')">Find a repair shop</button><button onclick="go('col')">Find a collection point</button></div>`;
+return `${back('follow')}<h1>Preliminary guidance</h1><div class="c"><h3>What you reported</h3><p>${esc(d.br)}: ${s.n.toLowerCase()}. ${esc(d.ds)} (${esc(d.q1)||'pattern not given'}; visible damage: ${esc(d.q2)||'not given'}).</p>
+<h3>Possible explanations</h3><ul>${s.why.map(x=>`<li>${x}</li>`).join('')}</ul><h3>Approved preliminary checks</h3><ul>${s.chk.map(x=>`<li>${x}</li>`).join('')}</ul>
+<p class="mu">Source: RepairLens curated sample guidance for the hackathon prototype. It needs expert review before any public pilot.</p></div>
+<div class="bn"><b>Please note:</b> the information provided does not confirm the cause of the problem. You can request an assessment from a listed repair provider.</div>
+<h3>Suggested next step</h3><p>If the checks do not help, request an assessment. If repair is not practical, a collection point is available.</p><div class="row"><button class="p" onclick="go('dir')">Choose a repair shop</button><button onclick="go('col')">Find a collection point</button></div>`},
+dir:()=>`${back()}<h1>Repair shops</h1>`+S.D.prov.map(p=>`<div class="c"><h3>${p.n}</h3><div>${bdg(p.v)}</div><p class="mu">Area: ${p.a}<br>Devices: Laptops<br>Contact: ${p.c}<br>Hours: ${p.h}</p><button class="p" onclick="S.sel=null;S.pick='${p.id}';go('prov')">Request assessment</button></div>`).join(''),
+prov:()=>{const p=P(S.pick),d=S.draft;if(!d.br)return `${back('dir')}<div class="c">Report your device problem first so the shop has the details it needs.<div class="row"><button class="p" onclick="go('report')">Report a device problem</button></div></div>`;
+return `${back('dir')}<h1>${p.n}</h1><div>${bdg(p.v)}</div><div class="c"><h3>Information that will be shared</h3><p>Device: Laptop, ${esc(d.br)}<br>Symptom: ${SYM[d.sy].n}<br>Description: ${esc(d.ds)||'None'}<br>Area: ${esc(d.ar)}<br>Follow-up answers: ${esc(d.q1)||'-'}, damage: ${esc(d.q2)||'-'}, assessed before: ${esc(d.q4)||'-'}</p>
+<label class="o"><input type="checkbox" id="cf"> I confirm I agree to share this information with ${p.n}.</label></div>
+<div class="bn">Submitting is not an appointment and does not agree to a paid repair. No payments are processed.</div><div id="er"></div><button class="p" onclick="submitReq()">Submit request</button>`},
+reqs:()=>`${back()}<h1>My requests</h1>`+(S.D.reqs.length?S.D.reqs.map(r=>`<div class="c"><h3>${r.id} · ${esc(r.dev.br)}</h3><p class="mu">${SYM[r.dev.sy].n} · ${P(r.prov).n}<br>Submitted ${r.date}</p><span class="bd">${r.status}</span><div class="row"><button onclick="S.sel='${r.id}';go('req')">Open</button></div></div>`).join(''):'<div class="c">No requests yet. Report a broken device to start one.</div>'),
+req:()=>{const r=R(S.sel),est=r.est;let h=`${back('reqs')}<h1>${r.id}</h1><span class="bd">${r.status}</span><p class="mu">${esc(r.dev.br)} · ${SYM[r.dev.sy].n} · ${P(r.prov).n} · sharing consent recorded</p>`;
+if(est)h+=`<div class="c"><h3>Provider estimate</h3><p>Assessment: ${esc(est.n)}<br>Proposed work: ${esc(est.w)}<br>Estimated price: RM ${esc(est.p)} (sample)<br>Estimated time: ${esc(est.t)||'Not provided'}<br>Conditions: ${esc(est.c)||'None stated'}${est.f?'<br>Further inspection needed.':''}</p>`+(r.status=='Awaiting resident decision'?`<div class="row"><button class="p" onclick="decide('${r.id}','a')">Accept</button><button class="w" onclick="decide('${r.id}','d')">Decline</button><button onclick="decide('${r.id}','c')">Request clarification</button></div>`:'')+'</div>';
+if(r.status=='Repair completed'&&!r.rc)h+=`<div class="c"><h3>Provider reports the repair is complete</h3><p>Please confirm separately whether the problem is resolved.</p><div class="row"><button class="p" onclick="conf('${r.id}',1)">Confirm it is fixed</button><button class="w" onclick="conf('${r.id}',0)">Not resolved</button></div></div>`;
+if(r.rc=='disputed')h+='<div class="bn">Outcome marked as unresolved or disputed.</div>';
+if(['Repair declined','Not repairable'].includes(r.status))h+=`<div class="c"><h3>Repair is not going ahead</h3><p>You can hand the device to a collection point instead.</p><button class="p" onclick="go('col')">See collection options</button></div>`;
+return h+`<h2>Status history</h2>`+tl(r)},
+col:()=>{const el=S.D.reqs.filter(r=>['Repair declined','Not repairable'].includes(r.status)&&!S.D.hand.some(h=>h.rid==r.id));
+return `${back()}<h1>Collection points</h1>`+S.D.col.map(c=>`<div class="c"><h3>${c.n}</h3><div>${bdg(c.v)}</div><p class="mu">${c.l}<br>Accepts: ${c.cat}<br>Contact: ${c.c}<br>Hours: ${c.h}</p>${el.length?`<label for="h${c.id}">Record my handover for</label><select id="h${c.id}">${el.map(r=>`<option value="${r.id}">${r.id} · ${esc(r.dev.br)}</option>`).join('')}</select><div class="row"><button onclick="hand('${c.id}')">I handed over my device</button></div>`:''}</div>`).join('')+'<div class="bn">A handover is not the same as completed recycling. Real listings must be checked before they are presented as usable services.</div>'},
+pw:()=>{const rs=S.D.reqs.filter(r=>r.prov==S.pid);return `<h1>Repair shop workspace</h1><label for="pp">Working as</label><select id="pp" onchange="S.pid=this.value;render()">${S.D.prov.map(p=>`<option value="${p.id}" ${S.pid==p.id?'selected':''}>${p.n}</option>`).join('')}</select><div class="mu">Only requests assigned to this shop and shared with consent appear here.</div>`+(rs.length?rs.map(r=>`<div class="c"><h3>${r.id} · ${esc(r.dev.br)}</h3><p class="mu">${SYM[r.dev.sy].n} · submitted ${r.date}</p><span class="bd">${r.status}</span><p>${esc(r.dev.ds)}</p>${pact(r)}<details><summary>History</summary>${tl(r)}</details></div>`).join(''):'<div class="c">No requests assigned yet.</div>')},
+adm:()=>{const q=S.D.reqs,n=s=>q.filter(r=>r.status==s).length,H=S.D.hand;const k=[['Total requests',q.length],['Under assessment',n('Under assessment')],['Repairs in progress',n('Repair in progress')],['Provider-reported completed',q.filter(r=>r.pdone).length],['Resident-confirmed outcomes',q.filter(r=>r.rc=='confirmed').length],['Disputed outcomes',q.filter(r=>r.rc=='disputed').length],['Repairs declined',n('Repair declined')],['Marked not repairable',n('Not repairable')],['Handovers reported by residents',H.length],['Handovers confirmed by partner',H.filter(h=>h.pc).length]];
+return `<h1>Township dashboard</h1><div class="d">${k.map(([l,v])=>`<div class="c"><div class="n">${v}</div><div class="mu">${l}</div></div>`).join('')}</div><div class="bn">Counts are kept separate and contain no personal details. The app makes no claims about carbon saved, waste prevented, longer device life or completed recycling.</div>
+<h2>Manage directory</h2>`+[...S.D.prov.map(p=>[p.n,p,'p']),...S.D.col.map(c=>[c.n,c,'c'])].map(([t,o,k])=>`<div class="c"><b>${t}</b><div>${bdg(o.v)}</div><div class="row"><button onclick="ver('${k}','${o.id}')">${o.v?'Mark as sample data':'Mark as verified'}</button></div></div>`).join('')+`<h2>Collection handovers</h2>`+(H.length?H.map((h,i)=>`<div class="c">${h.rid} → ${esc(h.pn)}<br><span class="mu">Resident reported ${h.t}. Partner receipt: ${h.pc?'confirmed '+h.pc:'not confirmed'}.</span>${h.pc?'':`<div class="row"><button onclick="pconf(${i})">Record partner receipt (demo)</button></div>`}</div>`).join(''):'<div class="c mu">No handovers recorded yet.</div>')+'<div class="row"><button class="w" onclick="if(confirm(\'Clear all demo data?\')){S.D=seed();save();render()}">Reset demo data</button></div>'}};
+function pact(r){const i=r.id;if(r.status=='Submitted')return `<button class="p" onclick="pst('${i}','Under assessment')">Start assessment</button>`;
+if(r.status=='Under assessment'||(r.status=='Awaiting resident decision'&&r.clar))return `${r.clar?'<div class="bn">Resident asked for clarification. Update the estimate below.</div>':''}<label>Assessment notes</label><textarea id="en${i}" rows="2"></textarea><label>Proposed repair</label><input type="text" id="ew${i}"><label>Estimated price (RM)</label><input type="text" id="ep${i}" inputmode="decimal"><label>Expected turnaround</label><input type="text" id="et${i}"><label>Conditions or limitations</label><input type="text" id="ec${i}"><label class="o"><input type="checkbox" id="ef${i}"> Further inspection needed</label><div class="row"><button class="p" onclick="sendEst('${i}')">Send estimate</button><button class="w" onclick="pst('${i}','Not repairable')">Mark not repairable</button></div>`;
+if(r.status=='Repair in progress')return `<button class="p" onclick="pdone('${i}')">Mark repair completed</button>`;
+if(r.status=='Awaiting resident decision')return '<div class="mu">Waiting for the resident’s decision.</div>';
+if(r.status=='Repair completed')return '<div class="mu">Provider-reported completion. Waiting for resident confirmation.</div>';return ''}
+function toFollow(){const d=S.draft;d.br=val('br').trim();d.sy=val('sy');d.ds=val('ds').trim();d.ar=val('ar');d.cs=$('#cs').checked;
+if(!d.br||!d.ds){$('#er').innerHTML='<div class="wr">Enter the brand and model and a short description.</div>';return}
+if(!d.cs){$('#er').innerHTML='<div class="wr">Tick the sharing consent box to continue.</div>';return}go('follow')}
+function toGuide(){const d=S.draft;d.q1=rd('q1');d.q2=rd('q2');d.q4=rd('q4');
+if(!d.q1||!d.q2||!d.q4){$('#er').innerHTML='<div class="wr">Answer all three questions above.</div>';return}
+S.flag=[...document.querySelectorAll('.wn:checked')].map(x=>x.value);go('guide')}
+function submitReq(){if(!$('#cf').checked){$('#er').innerHTML='<div class="wr">Confirm consent to share before submitting.</div>';return}
+const r={id:'RL-'+(1001+S.D.reqs.length),dev:{...S.draft},prov:S.pick,date:now(),status:'Submitted',log:[],est:null,rc:null};S.D.reqs.push(r);log(r,'Resident','Submitted','Request created with sharing consent.');S.sel=r.id;go('req')}
+function pst(i,s){const r=R(i);log(r,'Repair shop',s,s=='Not repairable'?'Provider assessed the device as not repairable.':'');render()}
+function sendEst(i){const r=R(i),g=x=>val(x+i).trim();if(!g('en')||!g('ew')||!g('ep')){alert('Add assessment notes, the proposed repair and a price.');return}
+r.est={n:g('en'),w:g('ew'),p:g('ep'),t:g('et'),c:g('ec'),f:$('#ef'+i).checked};r.clar=false;log(r,'Repair shop','Awaiting resident decision','Estimate provided (sample price).');render()}
+function decide(i,k){const r=R(i);if(k=='a')log(r,'Resident','Repair in progress','Resident accepted the estimate.');if(k=='d')log(r,'Resident','Repair declined','Resident declined the estimate.');if(k=='c'){r.clar=true;log(r,'Resident',null,'Resident requested clarification.')}render()}
+function pdone(i){const r=R(i);r.pdone=true;log(r,'Repair shop','Repair completed','Provider reports the repair as complete. Not yet confirmed by the resident.');render()}
+function conf(i,ok){const r=R(i);if(ok){r.rc='confirmed';log(r,'Resident','Closed','Resident confirmed the problem is resolved.')}else{r.rc='disputed';log(r,'Resident',null,'Resident reports the problem is not resolved.')}render()}
+function hand(c){const rid=val('h'+c),p=S.D.col.find(x=>x.id==c);S.D.hand.push({rid,pn:p.n,t:now(),pc:null});R(rid).log.push({t:now(),who:'Resident',s:R(rid).status,note:'Resident reports handing the device to '+p.n+'. Not partner-confirmed.'});save();render()}
+function pconf(i){S.D.hand[i].pc=now();save();render()}
+function ver(k,id){const o=(k=='p'?S.D.prov:S.D.col).find(x=>x.id==id);o.v=o.v?0:1;save();render()}
+function render(){$('#app').innerHTML=head()+V[S.view]()}
+render();
+</script></body></html>
