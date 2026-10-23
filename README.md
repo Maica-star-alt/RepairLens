@@ -46,5 +46,7 @@ The app does not claim carbon saved, waste prevented, longer device life or comp
 ## Future work
 Native Android/iOS apps, more device types, photo upload, notifications, real authentication and data retention controls, verified listings, partner-confirmed collection, and evidence-based environmental estimates.
 
-## Team
-[Add team name and members here]
+## Team: THE GOAT
+-Amir Hakim bin Nasrul
+-Fathul Iman bin Fairul Hasnizam
+-Muhamad Raziqbin Muhamad Riduwan
